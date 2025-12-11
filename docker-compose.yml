@@ -1,0 +1,41 @@
+﻿services:
+  filestoring:
+    build: ./filestoring
+    container_name: filestoring
+    ports:
+      - "5001:80"
+    volumes:
+      - filestoring_data:/app/data
+    networks:
+      - kponet
+
+  analysis:
+    build: ./analysis
+    container_name: analysis
+    ports:
+      - "5002:80"
+    volumes:
+      - analysis_data:/app/data
+    networks:
+      - kponet
+    depends_on:
+      - filestoring
+
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - "5000:80"
+    networks:
+      - kponet
+    depends_on:
+      - filestoring
+      - analysis
+
+volumes:
+  filestoring_data:
+  analysis_data:
+
+networks:
+  kponet:
+    driver: bridge
